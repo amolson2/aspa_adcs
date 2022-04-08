@@ -121,6 +121,7 @@ function f = plot_rotations(X)
     f.Position = [400 200 900 800];
     title('Satellite Rotation Trajectory')
     hold on; view(3);
+    view(135, 30);
     xlim([-1, 1]); ylim([-1, 1]), zlim([-1, 1]);
     plot3(X(:, 1, 1), X(:, 1, 2), X(:, 1, 3), ...
           X(:, 2, 1), X(:, 2, 2), X(:, 2, 3), ...

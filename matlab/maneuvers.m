@@ -13,7 +13,7 @@ J = [4.7921880e+06  8.4185790e+03  1.5313532e+04;
 
 %% Disturbance Torques (SRP, GG, etc.)
 
-T = 40 * 60;                % Time to simulate (s)
+T = 20 * 60;                % Time to simulate (s)
 SRP = 3.46e-5;              % SRP Torque (Nm)
 w_0 = [0; 0; 0];            % Initial Angular Rotation (rad/s)
 q_c = [0; 0; 0; 1];         % Command Quaternion
@@ -31,8 +31,8 @@ saveas(f, 'figures/Disturbance_Rotations.png');
 
 %% Detumble (Thruster Misfire, Launch Vehicle, etc.)
 
-T = 60 * 60;                % Time to simulate (s)
-w_0 = [0.1; 0.5; 0];        % Initial Angular Rotation (rad/s)
+T = 40 * 60;                % Time to simulate (s)
+w_0 = [0.1; 0.05; 0];       % Initial Angular Rotation (rad/s)
 q_c = [0; 0; 0; 1];         % Command Quaternion
 
 [times, errors, momenta, X] = reg.regulate(J, w_0, q_c, 0, T);
