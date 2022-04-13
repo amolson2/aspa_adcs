@@ -1,5 +1,6 @@
 %% Imports
 
+clc; clear;
 vect = vector;
 quat = quaternion;
 
@@ -17,10 +18,8 @@ wheel_momenta = zeros(3, n);
 % Initial Conditions
 J = [6400, -76.4, -25.6; -76.4, 4730, -40; -25.6, -40, 8160];
 h_0 = [0, 0, 0]';
-w_0 = [0.1, 0.5, 0.1]';
-% w_0 = [0, 0, 0]';
-% q_0 = (sqrt(2) / 2) * [1, 0, 0, 1]';
-q_0 = [0, 0, 0, 1]';
+w_0 = [0.01, 0.01, 0.01]';
+q_0 = (sqrt(2) / 2) * [1, 0, 0, 1]';
 q_c = [0, 0, 0, 1]';
 
 % Controller Parameters
@@ -31,6 +30,7 @@ k_d = 150;
 h = h_0;
 q = q_0;
 w = w_0;
+fprintf('Initial:   %.3f\n', norm(J * w_0));
 for t = 1:n
    
     dq = quat.dq(q, q_c);

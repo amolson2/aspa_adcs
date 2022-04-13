@@ -91,17 +91,10 @@ function [pyramid, nasa] = decompose(momenta)
               0, 0, 1, 1 / sqrt(3)];
     pyramid = pinv(W_pyramid) * momenta';
     nasa = pinv(W_NASA) * momenta';
-    fprintf('\n');
-    fprintf('%40s : %.3f Nms\n', 'Total Pyramid Wheel Momenta', ...
+    fprintf('%40s : %.3f\n Nms', 'Total Pyramid Wheel Momenta', ...
         sum(abs(pyramid(:, end))));
-    fprintf('%40s : %.3f Nms\n', 'Max Pyramid Wheel Momenta', ...
-        max(abs(pyramid(:, end))));
-    disp(pyramid(:, end));
-    fprintf('%40s : %.3f Nms\n', 'Total NASA Wheel Momenta', ...
+    fprintf('%40s : %.3f\n Nms', 'Total NASA Wheel Momenta', ...
         sum(abs(nasa(:, end))));
-    fprintf('%40s : %.3f Nms\n', 'Max NASA Wheel Momenta', ...
-        max(abs(nasa(:, end))));
-    disp(nasa(:, end));
 end
 
 function f = plot_wheel_momenta(times, pyramid, nasa)
