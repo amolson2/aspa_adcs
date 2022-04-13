@@ -34,6 +34,9 @@ function [times, errors, momenta, X] = reg(J, w_0, q_c, M, T)
     h = h_0;
     q = q_0;
     w = w_0;
+    fprintf('Simulating -----------------------------------------\n');
+    fprintf('T : %d, k_
+    fprintf('----------------------------------------------------\n');
     fprintf('%40s : %.3f Nms\n', 'Total Initial Satellite Momenta', ...
             norm(J * w_0));
     for t = 1:n
@@ -91,10 +94,19 @@ function [pyramid, nasa] = decompose(momenta)
               0, 0, 1, 1 / sqrt(3)];
     pyramid = pinv(W_pyramid) * momenta';
     nasa = pinv(W_NASA) * momenta';
-    fprintf('%40s : %.3f\n Nms', 'Total Pyramid Wheel Momenta', ...
+    fprintf('\n');
+    fprintf('%40s : %.3f Nms\n', 'Total Pyramid Wheel Momenta', ...
         sum(abs(pyramid(:, end))));
-    fprintf('%40s : %.3f\n Nms', 'Total NASA Wheel Momenta', ...
+    fprintf('%40s : (Nms)\n', 'Max Pyramid Wheel Momenta');
+    disp(max(abs(pyramid')));
+    fprintf('%40s : (Nms)\n', 'Individual Pyramid Wheel Momenta');
+    disp(pyramid(:, end)');
+    fprintf('%40s : %.3f Nms\n', 'Total NASA Wheel Momenta', ...
         sum(abs(nasa(:, end))));
+    fprintf('%40s : (Nms)\n', 'Max NASA Wheel Momenta');
+    disp(max(abs(nasa')));
+    fprintf('%40s : (Nms)\n', 'Individual NASA Wheel Momenta');
+    disp(nasa(:, end)');
 end
 
 function f = plot_wheel_momenta(times, pyramid, nasa)

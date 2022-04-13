@@ -34,6 +34,10 @@ function [times, errors, momenta, X] = reg(J, w_0, q_c, M, T)
     h = h_0;
     q = q_0;
     w = w_0;
+    fprintf('Simulating -----------------------------------------\n');
+    fprintf('Total Time : %d, Moment : %0.3f, k_p : %d, k_d : %d\n', ...
+        T, M, k_p, k_d);
+    fprintf('----------------------------------------------------\n');
     fprintf('%40s : %.3f Nms\n', 'Total Initial Satellite Momenta', ...
             norm(J * w_0));
     for t = 1:n
@@ -94,14 +98,16 @@ function [pyramid, nasa] = decompose(momenta)
     fprintf('\n');
     fprintf('%40s : %.3f Nms\n', 'Total Pyramid Wheel Momenta', ...
         sum(abs(pyramid(:, end))));
-    fprintf('%40s : %.3f Nms\n', 'Max Pyramid Wheel Momenta', ...
-        max(abs(pyramid(:, end))));
-    disp(pyramid(:, end));
+    fprintf('%40s : (Nms)\n', 'Max Pyramid Wheel Momenta');
+    disp(max(abs(pyramid')));
+    fprintf('%40s : (Nms)\n', 'Individual Pyramid Wheel Momenta');
+    disp(pyramid(:, end)');
     fprintf('%40s : %.3f Nms\n', 'Total NASA Wheel Momenta', ...
         sum(abs(nasa(:, end))));
-    fprintf('%40s : %.3f Nms\n', 'Max NASA Wheel Momenta', ...
-        max(abs(nasa(:, end))));
-    disp(nasa(:, end));
+    fprintf('%40s : (Nms)\n', 'Max NASA Wheel Momenta');
+    disp(max(abs(nasa')));
+    fprintf('%40s : (Nms)\n', 'Individual NASA Wheel Momenta');
+    disp(nasa(:, end)');
 end
 
 function f = plot_wheel_momenta(times, pyramid, nasa)
@@ -114,13 +120,13 @@ function f = plot_wheel_momenta(times, pyramid, nasa)
     yline(0,'k--');
     ylabel({'Pyramid Configuration', 'Wheel Momenta (Nms)'});
     xlabel('Time (s)');
-    legend('w_1', 'w_2', 'w_3', 'w_4', 'location', 'best');
+    legend('wheel 1', 'wheel 2', 'wheel 3', 'wheel 4', 'location', 'best');
     subplot(2, 1, 2);
     plot(times, nasa);
     yline(0,'k--');
     ylabel({'Nasa Configuration', 'Wheel Momenta (Nms)'});
     xlabel('Time (s)');
-    legend('w_1', 'w_2', 'w_3', 'w_4', 'location', 'best');
+    legend('wheel 1', 'wheel 2', 'wheel 3', 'wheel 4', 'location', 'best');
 end
 
 function f = plot_rotations(X)

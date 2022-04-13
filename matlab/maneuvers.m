@@ -6,7 +6,7 @@ reg = regulate;
 quat = quaternion;
 
 % Show plots?
-show_plots = true;
+show_plots = false;
 
 % Save plots to figures/?
 save_plots = true;
