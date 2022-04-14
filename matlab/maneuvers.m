@@ -85,7 +85,7 @@ end
 
 clc;
 
-T = 3 * 60 * 60;                % Time to simulate (s)
+T = 3.5 * 60 * 60;              % Time to simulate (s)
 w_0 = [0; 0; 0];                % Initial Angular Rotation (rad/s)
 e_hat = [1; 1; 0];              % Axis of rotation
 e_hat = e_hat / norm(e_hat);    % Normalizing axis of rotation
