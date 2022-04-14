@@ -85,7 +85,7 @@ function slopes = momenta_slope(times, momenta)
     slopes = slopes(:, 1);
 end
 
-function f = plot_momenta(times, momenta, h_dots)
+function f = plot_momenta(times, momenta, H_dots)
     reg = regulate;
     f = figure('visible', 'off');
     f.Position = [400 200 800 600];
@@ -108,7 +108,7 @@ function f = plot_momenta(times, momenta, h_dots)
     legend('h_1', 'h_2', 'h_3', 'Location', 'east');
     subplot(2, 1, 2);
     hold on;
-    plot(times, h_dots);
+    plot(times, H_dots);
     grid on;
     ylabel('Total Control Torques (Nm)');
     xlabel('Time (s)');
