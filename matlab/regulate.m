@@ -7,7 +7,7 @@ function reg = regulate()
     reg.momenta_slope = @momenta_slope;
 end
 
-function [times, errors, momenta, X] = reg(J, w_0, q_c, M, M_time, T)
+function [times, errors, momenta, X] = reg(J, w_0, q_c, M, M_time, T, k_p, k_d)
     vect = vector;
     quat = quaternion;
 
@@ -25,8 +25,8 @@ function [times, errors, momenta, X] = reg(J, w_0, q_c, M, M_time, T)
     q_0 = [0, 0, 0, 1]';
 
     % Controller Parameters
-    k_p = 10;
-    k_d = 150;
+%     k_p = 10;
+%     k_d = 150;
     
     % Initial Basis for display
     X = zeros(n, 3, 3);

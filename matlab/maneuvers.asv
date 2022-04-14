@@ -6,10 +6,10 @@ reg = regulate;
 quat = quaternion;
 
 % Show plots?
-show_plots = false;
+show_plots = true;
 
 % Save plots to figures/?
-save_plots = true;
+save_plots = false;
 
 % Spacecraft Moment of Inertia (wet) (kg m^2)
 % J = [4.7921880e+06  8.4185790e+03  1.5313532e+04;
@@ -84,11 +84,11 @@ end
 
 clc;
 
-T = 2 * 60 * 60;                % Time to simulate (s)
+T = 100 * 60 * 60;                    % Time to simulate (s)
 w_0 = [0; 0; 0];                % Initial Angular Rotation (rad/s)
-e_hat = [1; 1; 1] / sqrt(3);    % Axis of rotation
+e_hat = [1; 1; 1] / 3;          % Axis of rotation
 q_c = quat.q(e_hat, pi);        % Command Quaternion
-k_p = 1e3; k_d = 1e5;           % Control Gains
+k_p = 5; k_d = 1e4;            % Control Gains
 
 [times, errors, momenta, X] = reg.regulate(J, w_0, q_c, 0, 0, T, k_p, k_d);
 [pyramid, nasa] = reg.decompose(times, momenta);
@@ -113,14 +113,12 @@ end
 
 clc;
 
-T = 2 * 60 * 60;                % Time to simulate (s)
+T = 60 * 60;                    % Time to simulate (s)
 M = 0.742;                      % Thruster Misalignment Torque (Nm)
-M_time = 1 * 60 * 60;           % Thruster burn time (s)
 w_0 = [0; 0; 0];                % Initial Angular Rotation (rad/s)
 q_c = [0; 0; 0; 1];             % Command Quaternion
-k_p = 1e3; k_d = 1e5;           % Control Gains
 
-[times, errors, momenta, X] = reg.regulate(J, w_0, q_c, M, M_time, T, k_p, k_d);
+[times, errors, momenta, X] = reg.regulate(J, w_0, q_c, M, T, T, 10, 150);
 [pyramid, nasa] = reg.decompose(times, momenta);
 
 f1 = reg.plot_momenta(times, errors, momenta);
