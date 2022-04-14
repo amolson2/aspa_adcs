@@ -85,10 +85,10 @@ end
 
 clc;
 
-T = 5 * 60 * 60;           % Time to simulate (s)
-w_0 = [1; 0; 1] * 1e-2;     % Initial Angular Rotation (rad/s)
+T = 100 * 60 * 60;            % Time to simulate (s)
+w_0 = [1; 0; 1] * 1e-5;     % Initial Angular Rotation (rad/s)
 q_c = [0; 0; 0; 1];         % Command Quaternion
-k_p = 40; k_d = 1e4;        % Control Gains
+k_p = 10; k_d = 1e5;        % Control Gains
 
 [times, ~, momenta, h_dots, X] = reg.regulate(J, w_0, q_c, 0, 0, T, k_p, k_d);
 [pyramid, nasa] = reg.decompose(times, momenta);
