@@ -4,9 +4,10 @@ function reg = regulate()
     reg.plot_wheel_momenta = @plot_wheel_momenta;
     reg.decompose = @decompose;
     reg.plot_rotations = @plot_rotations;
+    reg.momenta_slope = @momenta_slope;
 end
 
-function [times, errors, momenta, X] = reg(J, w_0, q_c, M, T)
+function [times, errors, momenta, X] = reg(J, w_0, q_c, M, M_time, T)
     vect = vector;
     quat = quaternion;
 
@@ -14,6 +15,7 @@ function [times, errors, momenta, X] = reg(J, w_0, q_c, M, T)
     n = 20000;
     dt = T / n;
     times = linspace(0, T, n);
+    M_n = length(times(times < M_time));
 
     errors = zeros(n, 4);
     momenta = zeros(n, 3);
@@ -34,11 +36,13 @@ function [times, errors, momenta, X] = reg(J, w_0, q_c, M, T)
     h = h_0;
     q = q_0;
     w = w_0;
+    ext_torque = zeros(n, 3);
+    ext_torque(1:M_n, :) = ones(M_n, 3) * M / 3;
     fprintf('Simulating -----------------------------------------\n');
     fprintf('Total Time : %d, Moment : %0.3f, k_p : %d, k_d : %d\n', ...
         T, M, k_p, k_d);
     fprintf('----------------------------------------------------\n');
-    fprintf('%40s : %.3f Nms\n', 'Total Initial Satellite Momenta', ...
+    fprintf('%-40s : %.3f Nms\n', 'Total Initial Satellite Momenta', ...
             norm(J * w_0));
     for t = 1:n
         
@@ -47,9 +51,9 @@ function [times, errors, momenta, X] = reg(J, w_0, q_c, M, T)
         L = - k_p * sign(dq(4)) * dq(1:3) - k_d * w;
 
         % Integration
-        w_dot = - inv(J) * (vect.cross(w) * J * w - L - M);                 % Angular velocity of the spacecraft body
-        h_dot = - vect.cross(w) * h - L;                                    % Angular momentum of the reaction wheels
-        q_dot = (1/2) * quat.xi(q) * w;                                     % Rate of change of pointing quaternion q
+        w_dot = - inv(J) * (vect.cross(w) * J * w - L - ext_torque(t, :)');    % Angular velocity of the spacecraft body
+        h_dot = - vect.cross(w) * h - L;                                   % Angular momentum of the reaction wheels
+        q_dot = (1/2) * quat.xi(q) * w;                                    % Rate of change of pointing quaternion q
 
         q = q + q_dot * dt;
         q = q / norm(q);
@@ -62,31 +66,48 @@ function [times, errors, momenta, X] = reg(J, w_0, q_c, M, T)
         momenta(t, :) = h;
 
     end
-    fprintf('%40s : %.3f Nms\n', 'Total Final Wheel Momenta', norm(h));
+    fprintf('%-40s : %.3f Nms\n', 'Total Final Wheel Momenta', norm(h));
+    reg = regulate;
+    momenta_slopes = reg.momenta_slope(times, momenta);
+    fprintf('%-40s : (Nms/s)\n', 'Total Momenta Increase Rate');
+    disp(momenta_slopes');
+end
+
+function slopes = momenta_slope(times, momenta)
+    n = size(momenta);
+    n = n(2);
+    slopes = zeros(n, 2);
+    for i = 1:n
+        slopes(i, :) = polyfit(times(500:end)', momenta(500:end, i), 1);
+    end
+    slopes = slopes(:, 1);
 end
 
 function f = plot_momenta(times, errors, momenta)
+    reg = regulate;
     f = figure('visible', 'off');
     f.Position = [400 200 800 600];
     title('Maneuver Errors and Total Wheel Momenta')
     subplot(2, 1, 1);
-    grid on;
     plot(times, errors);
+    grid on;
     yline(0,'k--');
     yline(1,'k--');
     ylabel('Quaternion Errors');
     xlabel('Time (s)');
     legend('q_1', 'q_2', 'q_3', 'q_4', 'location', 'best');
     subplot(2, 1, 2);
-    grid on;
+    hold on;
     plot(times, momenta);
-    yline(0,'k--');
+    grid on;
+    yline(0, 'k--');
     ylabel('Total Wheel Momenta (Nms)');
     xlabel('Time (s)');
     legend('h_1', 'h_2', 'h_3', 'location', 'best');
 end
 
-function [pyramid, nasa] = decompose(momenta)
+function [pyramid, nasa] = decompose(times, momenta)
+    reg = regulate;
     W_pyramid = [1, -1, 0, 0;
                  1, 1, 1, 1;
                  0, 0, 1, -1] * (1 / sqrt(2));
@@ -95,38 +116,45 @@ function [pyramid, nasa] = decompose(momenta)
               0, 0, 1, 1 / sqrt(3)];
     pyramid = pinv(W_pyramid) * momenta';
     nasa = pinv(W_NASA) * momenta';
+    pyramid_slope = reg.momenta_slope(times, pyramid');
+    nasa_slope = reg.momenta_slope(times, nasa');
     fprintf('\n');
-    fprintf('%40s : %.3f Nms\n', 'Total Pyramid Wheel Momenta', ...
+    fprintf('%-40s : %.3f Nms\n', 'Total Pyramid Wheel Momenta', ...
         sum(abs(pyramid(:, end))));
-    fprintf('%40s : (Nms)\n', 'Max Pyramid Wheel Momenta');
+    fprintf('%-40s : (Nms)\n', 'Max Pyramid Wheel Momenta');
     disp(max(abs(pyramid')));
-    fprintf('%40s : (Nms)\n', 'Individual Pyramid Wheel Momenta');
+    fprintf('%-40s : (Nms)\n', 'Individual Pyramid Wheel Momenta');
     disp(pyramid(:, end)');
-    fprintf('%40s : %.3f Nms\n', 'Total NASA Wheel Momenta', ...
+    fprintf('%-40s : (Nms/s)\n', 'Individual Pyramid Wheel Momenta Increase Rate');
+    disp(pyramid_slope');
+    fprintf('%-40s : %.3f Nms\n', 'Total NASA Wheel Momenta', ...
         sum(abs(nasa(:, end))));
-    fprintf('%40s : (Nms)\n', 'Max NASA Wheel Momenta');
+    fprintf('%-40s : (Nms)\n', 'Max NASA Wheel Momenta');
     disp(max(abs(nasa')));
-    fprintf('%40s : (Nms)\n', 'Individual NASA Wheel Momenta');
+    fprintf('%-40s : (Nms)\n', 'Individual NASA Wheel Momenta');
     disp(nasa(:, end)');
+    fprintf('%-40s : (Nms/s)\n', 'Individual NASA Wheel Momenta Increase Rate');
+    disp(nasa_slope');
 end
 
 function f = plot_wheel_momenta(times, pyramid, nasa)
     f = figure('visible', 'off');
     f.Position = [400 200 800 600];
     title('Wheel Momenta Comparison')
-    grid on;
     subplot(2, 1, 1);
     plot(times, pyramid);
+    grid on;
     yline(0,'k--');
     ylabel({'Pyramid Configuration', 'Wheel Momenta (Nms)'});
     xlabel('Time (s)');
-    legend('wheel 1', 'wheel 2', 'wheel 3', 'wheel 4', 'location', 'best');
+    legend('wheel 1', 'wheel 2', 'wheel 3', 'wheel 4', 'location', 'northeast');
     subplot(2, 1, 2);
     plot(times, nasa);
+    grid on;
     yline(0,'k--');
     ylabel({'Nasa Configuration', 'Wheel Momenta (Nms)'});
     xlabel('Time (s)');
-    legend('wheel 1', 'wheel 2', 'wheel 3', 'wheel 4', 'location', 'best');
+    legend('wheel 1', 'wheel 2', 'wheel 3', 'wheel 4', 'location', 'northeast');
 end
 
 function f = plot_rotations(X)
