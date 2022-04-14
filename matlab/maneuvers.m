@@ -6,11 +6,12 @@ reg = regulate;
 quat = quaternion;
 
 % Show plots?
-show_plots = false;
+show_plots = true;
 
 % Save plots to figures/?
 save_plots = true;
 
+% (old)
 % Spacecraft Moment of Inertia (wet) (kg m^2)
 % J = [4.7921880e+06  8.4185790e+03  1.5313532e+04;
 %      8.4185790e+03  9.3203071e+06 -1.2106130e+04;

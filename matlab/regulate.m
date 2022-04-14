@@ -101,7 +101,7 @@ function f = plot_momenta(times, errors, momenta)
     plot(times, momenta);
     grid on;
     yline(0, 'k--');
-    ylabel('Total Wheel Momenta (Nms)');
+    ylabel('Total Control Momenta (Nms)');
     xlabel('Time (s)');
     legend('h_1', 'h_2', 'h_3', 'Location', 'east');
 end
