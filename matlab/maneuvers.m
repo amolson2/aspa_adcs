@@ -60,7 +60,7 @@ M = 1 * 10;                 % RCS Thruster Torque (Nm)
 M_time = 10;                % Time of RCS Thruster Misfire (s)
 w_0 = [0; 0; 0];            % Initial Angular Rotation (rad/s)
 q_c = [0; 0; 0; 1];         % Command Quaternion
-k_p = 1; k_d = 5e4;         % Control Gains
+k_p = 800; k_d = 1e5;         % Control Gains
 
 [times, ~, momenta, h_dots, X] = reg.regulate(J, w_0, q_c, M, M_time, T, k_p, k_d);
 [pyramid, nasa] = reg.decompose(times, momenta);
