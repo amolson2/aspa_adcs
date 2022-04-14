@@ -95,7 +95,7 @@ function f = plot_momenta(times, errors, momenta)
     yline(1,'k--');
     ylabel('Quaternion Errors');
     xlabel('Time (s)');
-    legend('q_1', 'q_2', 'q_3', 'q_4', 'location', 'best');
+    legend('q_1', 'q_2', 'q_3', 'q_4', 'Location', 'east');
     subplot(2, 1, 2);
     hold on;
     plot(times, momenta);
@@ -103,7 +103,7 @@ function f = plot_momenta(times, errors, momenta)
     yline(0, 'k--');
     ylabel('Total Wheel Momenta (Nms)');
     xlabel('Time (s)');
-    legend('h_1', 'h_2', 'h_3', 'location', 'best');
+    legend('h_1', 'h_2', 'h_3', 'Location', 'east');
 end
 
 function [pyramid, nasa] = decompose(times, momenta)
@@ -147,14 +147,14 @@ function f = plot_wheel_momenta(times, pyramid, nasa)
     yline(0,'k--');
     ylabel({'Pyramid Configuration', 'Wheel Momenta (Nms)'});
     xlabel('Time (s)');
-    legend('wheel 1', 'wheel 2', 'wheel 3', 'wheel 4', 'location', 'northeast');
+    legend('wheel 1', 'wheel 2', 'wheel 3', 'wheel 4', 'Location', 'east');
     subplot(2, 1, 2);
     plot(times, nasa);
     grid on;
     yline(0,'k--');
     ylabel({'Nasa Configuration', 'Wheel Momenta (Nms)'});
     xlabel('Time (s)');
-    legend('wheel 1', 'wheel 2', 'wheel 3', 'wheel 4', 'location', 'northeast');
+    legend('wheel 1', 'wheel 2', 'wheel 3', 'wheel 4', 'Location', 'east');
 end
 
 function f = plot_rotations(X)

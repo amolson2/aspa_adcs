@@ -19,6 +19,8 @@ J = [4.7921880e+06  8.4185790e+03  1.5313532e+04;
 
 %% Disturbance Torques (SRP, GG, etc.)
 
+clc;
+
 T = 10 * 60;                % Time to simulate (s)
 SRP = 3.46e-5;              % SRP Torque (Nm)
 w_0 = [0; 0; 0];            % Initial Angular Rotation (rad/s)
@@ -29,21 +31,23 @@ q_c = [0; 0; 0; 1];         % Command Quaternion
 
 f1 = reg.plot_momenta(times, errors, momenta);
 f2 = reg.plot_wheel_momenta(times, pyramid, nasa);
-f3 = reg.plot_rotations(X);
+% f3 = reg.plot_rotations(X);
 
 if save_plots
     saveas(f1, 'figures/Disturbance_Momenta.png');
     saveas(f2, 'figures/Disturbance_Wheel_Momenta.png');
-    saveas(f3, 'figures/Disturbance_Rotations.png');
+%     saveas(f3, 'figures/Disturbance_Rotations.png');
 end
 
 if show_plots
     set(f1, 'visible', 'on');
     set(f2, 'visible', 'on');
-    set(f3, 'visible', 'on');
+%     set(f3, 'visible', 'on');
 end
 
 %% Detumble (Thruster Misfire, Launch Vehicle, etc.)
+
+clc;
 
 T = 40 * 60;                % Time to simulate (s)
 M = 10;                     % RCS Thruster Torque (Nm)
@@ -69,35 +73,10 @@ if show_plots
     set(f2, 'visible', 'on');
     set(f3, 'visible', 'on');
 end
-
-%% Detumble 2 (Use RCS)
-
-T = 40 * 60;                % Time to simulate (s)
-M = 4 * 10;                 % RCS Thruster Torque (Nm)
-M_time = 10;                % Time of RCS Thruster Misfire (s)
-w_0 = [0; 0; 0];            % Initial Angular Rotation (rad/s)
-q_c = [0; 0; 0; 1];         % Command Quaternion
-
-[times, errors, momenta, X] = reg.regulate(J, w_0, q_c, M, M_time, T);
-[pyramid, nasa] = reg.decompose(times, momenta);
-
-f1 = reg.plot_momenta(times, errors, momenta);
-f2 = reg.plot_wheel_momenta(times, pyramid, nasa);
-f3 = reg.plot_rotations(X);
-
-if save_plots
-    saveas(f1, 'figures/Detumble_Momenta.png');
-    saveas(f2, 'figures/Detumble_Wheel_Momenta.png');
-    saveas(f3, 'figures/Detumble_Rotations.png');
-end
-
-if show_plots
-    set(f1, 'visible', 'on');
-    set(f2, 'visible', 'on');
-    set(f3, 'visible', 'on');
-end
     
 %% Belly Flop (180 degree turn)
+
+clc;
 
 T = 40 * 60;                    % Time to simulate (s)
 w_0 = [0; 0; 0];                % Initial Angular Rotation (rad/s)
@@ -123,6 +102,8 @@ if show_plots
 end
 
 %% Thruster Misalignment
+
+clc;
 
 T = 60 * 60;                    % Time to simulate (s)
 M = 0.742;                      % Thruster Misalignment Torque (Nm)
