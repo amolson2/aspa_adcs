@@ -38,7 +38,7 @@ function [times, errors, momenta, h_dots, X] = reg(J, w_0, q_c, M, M_time, T, k_
     q = q_0;
     w = w_0;
     ext_torque = zeros(n, 3);
-    ext_torque(1:M_n, :) = ones(M_n, 3) * M / 3;
+    ext_torque(1:M_n, :) = ones(M_n, 3) * M / sqrt(3);
     fprintf('Simulating -----------------------------------------\n');
     fprintf('Total Time : %d, Moment : %0.3f, k_p : %d, k_d : %d\n', ...
         T, M, k_p, k_d);

@@ -26,13 +26,13 @@ J = [3.1019279e+10  2.2047148e+07  2.2994735e+08;
 
 clc;
 
-T = 1000 * 60;              % Time to simulate (s)
-SRP = 3.46e-5;              % SRP Torque (Nm)
+T = 20 * 60 * 60;           % Time to simulate (s)
+M = 1.10e-5;                % SRP Torque (Nm)
 w_0 = [0; 0; 0];            % Initial Angular Rotation (rad/s)
 q_c = [0; 0; 0; 1];         % Command Quaternion
 k_p = 10; k_d = 150;        % Control Gains
 
-[times, ~, momenta, h_dots, X] = reg.regulate(J, w_0, q_c, SRP, T, T, k_p, k_d);
+[times, ~, momenta, h_dots, X] = reg.regulate(J, w_0, q_c, M, T, T, k_p, k_d);
 [pyramid, nasa] = reg.decompose(times, momenta);
 
 f1 = reg.plot_momenta(times, momenta, h_dots);
@@ -83,31 +83,32 @@ end
 
 %% Detumble (Initial Spin)
 
-clc;
-
-T = 5 * 60 * 60;           % Time to simulate (s)
-w_0 = [1; 0; 1] * 1e-2;     % Initial Angular Rotation (rad/s)
-q_c = [0; 0; 0; 1];         % Command Quaternion
-k_p = 40; k_d = 1e4;        % Control Gains
-
-[times, ~, momenta, h_dots, X] = reg.regulate(J, w_0, q_c, 0, 0, T, k_p, k_d);
-[pyramid, nasa] = reg.decompose(times, momenta);
-
-f1 = reg.plot_momenta(times, momenta, h_dots);
-f2 = reg.plot_wheel_momenta(times, pyramid, nasa);
-f3 = reg.plot_rotations(X);
-
-if save_plots
-    saveas(f1, 'figures/Detumble2_Momenta.png');
-    saveas(f2, 'figures/Detumble2_Wheel_Momenta.png');
-    saveas(f3, 'figures/Detumble2_Rotations.png');
-end
-
-if show_plots
-    set(f1, 'visible', 'on');
-    set(f2, 'visible', 'on');
-    set(f3, 'visible', 'on');
-end
+% clc;
+% 
+% T = 5 * 60 * 60;                    % Time to simulate (s)
+% w_0 = [1; 5; 1];                    % Initial Angular Rotation vector
+% w_0 = (w_0 / norm(w_0)) * 1e-4;     % Initial Angular Rotation (rad/s)
+% q_c = [0; 0; 0; 1];                 % Command Quaternion
+% k_p = 10; k_d = 1e5;                % Control Gains
+% 
+% [times, ~, momenta, h_dots, X] = reg.regulate(J, w_0, q_c, 0, 0, T, k_p, k_d);
+% [pyramid, nasa] = reg.decompose(times, momenta);
+% 
+% f1 = reg.plot_momenta(times, momenta, h_dots);
+% f2 = reg.plot_wheel_momenta(times, pyramid, nasa);
+% f3 = reg.plot_rotations(X);
+% 
+% if save_plots
+%     saveas(f1, 'figures/Detumble2_Momenta.png');
+%     saveas(f2, 'figures/Detumble2_Wheel_Momenta.png');
+%     saveas(f3, 'figures/Detumble2_Rotations.png');
+% end
+% 
+% if show_plots
+%     set(f1, 'visible', 'on');
+%     set(f2, 'visible', 'on');
+%     set(f3, 'visible', 'on');
+% end
     
 %% Belly Flop (180 degree turn)
 
@@ -144,8 +145,9 @@ end
 clc;
 
 T = 2 * 60 * 60;                % Time to simulate (s)
-M = 0.742;                      % Thruster Misalignment Torque (Nm)
-M_time = 1 * 60 * 60;           % Thruster burn time (s)
+% M = 0.742;                    % Thruster Misalignment Torque (Nm)
+M = 5.52;                       % Thruster Misalignment Torque (Nm)
+M_time = 90 * 60;               % Thruster burn time (s)
 w_0 = [0; 0; 0];                % Initial Angular Rotation (rad/s)
 q_c = [0; 0; 0; 1];             % Command Quaternion
 k_p = 1e3; k_d = 1e5;           % Control Gains
