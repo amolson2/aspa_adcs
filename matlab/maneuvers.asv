@@ -1,7 +1,7 @@
 %% Imports
 
 % Reset Workspace
-clc; clear;
+clear;
 addpath('matlab');
 [u, reg, quat] = util().reset();
 
@@ -91,6 +91,7 @@ params.w_0 = [0; 0; 0];
 e_hat = [0, 1, 0]';
 e_hat = e_hat / norm(e_hat);
 params.q_c = quat.q(e_hat, pi);
+params.q_time = [1 * 60 * 60, params.T];
 params.k_p = 25; params.k_d = 1e5;
 
 results = reg.regulate(params);
@@ -115,7 +116,7 @@ u.show_plots(show_plots, plots);
 
 params = {};
 params.J = J;
-params.T = 3 * 60 * 60;
+params.T = 2 * 60 * 60;
 params.M = 5.52;
 params.M_ax = [1, 1, 1]';
 params.M_time = [0, 90 * 60];
@@ -149,18 +150,19 @@ M_all = M_each * 8;
 
 params = {};
 params.J = J;
-params.T = 20 * 60 * 60;
-params.n = 50000;
+params.T = 50 * 60 * 60;
+% params.n = 100000;
+params.n = 100000;
 params.M = 5.52;
 params.M_ax = [0, 1, 0]';
 params.M_time = [0, 100 * 60];
-params.error_time = params.M_time;
+spinrate = 0.005;
 % spinrate = 0.0089;
-spinrate = 0.0065;
+% spinrate = 0.01;
 params.w_0 = [1; 0; 0] * spinrate;
 params.q_c = [0; 0; 0; 1];
 params.q_time = [100 * 60, params.T];
-params.k_p = 0; params.k_d = 5e3;
+params.k_p = 0.5; params.k_d = 5e3;
 
 results = reg.regulate(params);
 wheels = reg.decompose(results);

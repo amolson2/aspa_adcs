@@ -60,7 +60,6 @@ function results = reg(params)
     % Initial Basis for display
     X = zeros(n, 3, 3);
     x_0 = eye(3);
-    X_c = quat.A(q_c) * x_0;
 
     % Reaction Wheel Simulation
     h = h_0;
@@ -101,12 +100,16 @@ function results = reg(params)
         w = w + w_dot * dt;
         h = h + h_dot * dt;
                 
+        
+        commanded = quat.A(q_c) * x_0;
         actual = quat.A(q) * x_0;
+        disp(commanded);
+        disp(act
         
         X(t, :, :) = actual;
         errors(t, :) = dq;
-        errors_mag(t) = rad2deg(acos(dot(X_c(:, 1), actual(:, 1)) /...
-            (norm(X_c(:, 1)) * norm(X_c(:, 1)))));
+        errors_mag(t) = acos(dot(commanded, actual) /...
+            (norm(commanded) * norm(actual)));
         momenta(t, :) = h;
         h_dots(t, :) = h_dot;
         rcs_momentum = rcs_momentum + abs(norm(h_dot * dt));
@@ -116,14 +119,12 @@ function results = reg(params)
     fprintf('Simulation Complete ------------------------------------------\n\n');
     
     results = {};
-    results.params = params;
     results.times = times;
     results.errors = errors;
     results.momenta = momenta;
     results.h_dots = h_dots;
     results.errors_mag = errors_mag;
     results.X = X;
-    results.X_c = X_c;
     results.rcs_mom = rcs_momentum;
     
 end
@@ -182,26 +183,35 @@ function slopes = momenta_slope(times, momenta)
     slopes = slopes(:, 1);
 end
 
-function f = plot_errors(results)
-    times = results.times;
-    errors = results.errors_mag;
-    limit = util().default(results.params, 'error_time', [0, results.params.T]);
+function f = plot_errors(times, results)
+    errors = results.errors;
+    reg = regulate;
     f = figure('visible', 'off');
-    f.Position = [400 200 800 300];
+    f.Position = [400 200 800 600];
     title('Maneuver Errors')
     plot(times, errors);
-    xlim(limit);
     grid on;
     ylabel('Error Angle (deg)');
     xlabel('Time (s)');
 end
 
-function f = plot_momenta(results)
-    times = results.times;
+function f = plot_momenta(times, results)
+
     momenta = results.momenta;
     h_dots = results.h_dots;
+
+    reg = regulate;
     f = figure('visible', 'off');
     f.Position = [400 200 800 600];
+%     title('Maneuver Errors and Total Wheel Momenta')
+%     subplot(2, 1, 1);
+%     plot(times, errors);
+%     grid on;
+%     yline(0,'k--');
+%     yline(1,'k--');
+%     ylabel('Quaternion Errors');
+%     xlabel('Time (s)');
+%     legend('q_1', 'q_2', 'q_3', 'q_4', 'Location', 'east');
     subplot(2, 1, 1);
     hold on;
     plot(times, momenta);
@@ -219,8 +229,7 @@ function f = plot_momenta(results)
     legend('T_1', 'T_2', 'T_3', 'Location', 'east');
 end
 
-function wheels = decompose(results)
-    momenta = results.momenta;
+function wheels = decompose(momenta)
     W_pyramid = [1, -1, 0, 0;
                  1, 1, 1, 1;
                  0, 0, 1, -1] * (1 / sqrt(2));
@@ -229,13 +238,13 @@ function wheels = decompose(results)
               0, 0, 1, 1 / sqrt(3)];
     pyramid = pinv(W_pyramid) * momenta';
     nasa = pinv(W_NASA) * momenta';
-    wheels.times = results.times;
+    
     wheels.pyramid = pyramid;
     wheels.nasa = nasa;
+
 end
 
-function f = plot_wheel_momenta(wheels)
-    times = wheels.times;
+function f = plot_wheel_momenta(times, wheels)
     pyramid = wheels.pyramid;
     nasa = wheels.nasa;
     f = figure('visible', 'off');
@@ -257,12 +266,11 @@ function f = plot_wheel_momenta(wheels)
     legend('wheel 1', 'wheel 2', 'wheel 3', 'wheel 4', 'Location', 'east');
 end
 
-function f = plot_rotations(results)
-    X = results.X;
-    X_c = results.X_c;
+function f = plot_rotations(X)
     origin = [0, 0, 0]';
     X_0 = squeeze(X(1, :, :));
     X_f = squeeze(X(end, :, :));
+
     f = figure('visible', 'off');
     f.Position = [400 200 700 600];
     title('Satellite Rotation Trajectory')
@@ -273,8 +281,7 @@ function f = plot_rotations(results)
           X(:, 2, 1), X(:, 2, 2), X(:, 2, 3), ...
           X(:, 3, 1), X(:, 3, 2), X(:, 3, 3));
     quiver3(origin, origin, origin, X_0(:, 1), X_0(:, 2), X_0(:, 3), 'b');
-    quiver3(origin, origin, origin, X_c(:, 1), X_c(:, 2), X_c(:, 3), 'm');
     quiver3(origin, origin, origin, X_f(:, 1), X_f(:, 2), X_f(:, 3), 'r');
     legend('X axis rotation', 'Y axis rotation', 'Z axis rotation', ...
-        'q_0', 'q_c', 'q_f');
+        'q_0', 'q_f');
 end
