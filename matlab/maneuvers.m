@@ -6,7 +6,7 @@ addpath('matlab');
 [u, reg, quat] = util().reset();
 
 % Show plots?
-show_plots = false;
+show_plots = true;
 
 % Save plots to figures/?
 save_plots = true;
@@ -119,13 +119,13 @@ u.show_plots(show_plots, plots);
 
 params = {};
 params.J = J;
-params.T = 20 * 60 * 60;
+params.T = 10 * 60 * 60;
 params.M = 0;
 params.w_0 = [0; 0; 0];
 e_hat = [0, 1, 0]';
 e_hat = e_hat / norm(e_hat);
 params.q_c = quat.q(e_hat, deg2rad(30));
-params.k_p = 20; params.k_d = 1e5;
+params.k_p = 40; params.k_d = 1e5;
 
 results = reg.regulate(params);
 wheels = reg.decompose(results);
@@ -148,13 +148,13 @@ u.show_plots(show_plots, plots);
 
 params = {};
 params.J = J;
-params.T = 20 * 60 * 60;
+params.T = 10 * 60 * 60;
 params.M = 0;
 params.w_0 = [0; 0; 0];
 e_hat = [0, 1, 0]';
 e_hat = e_hat / norm(e_hat);
 params.q_c = quat.q(e_hat, deg2rad(10));
-params.k_p = 20; params.k_d = 1e5;
+params.k_p = 40; params.k_d = 1e5;
 
 results = reg.regulate(params);
 wheels = reg.decompose(results);
@@ -213,7 +213,7 @@ params.T = 3 * 60 * 60;
 % params.M = 5.52;
 params.M = 2;
 params.M_ax = [1, 1, 1]';
-params.M_time = [0, 90 * 60];
+params.M_time = [0, 30 * 60];
 params.w_0 = [0; 0; 0];
 params.q_c = [0; 0; 0; 1];
 % params.k_p = 1e3; params.k_d = 1e5;
@@ -245,9 +245,10 @@ M_all = M_each * 8;
 
 params = {};
 params.J = J;
-params.T = 20 * 60 * 60;
-params.n = 50000;
+params.T = 24 * 60 * 60;
+params.n = 10000;
 params.M = 5.52;
+% params.M = 2;
 params.M_ax = [0, 1, 0]';
 params.M_time = [0, 100 * 60];
 params.error_time = params.M_time;
@@ -255,7 +256,7 @@ spinrate = 0.005;
 params.w_0 = [1; 0; 0] * spinrate;
 params.q_c = [0; 0; 0; 1];
 params.q_time = [100 * 60, params.T];
-params.k_p = 0.1; params.k_d = 500;
+params.k_p = 1; params.k_d = 1e4;
 
 results = reg.regulate(params);
 wheels = reg.decompose(results);
